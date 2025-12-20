@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<robot name="five_dof_L_elbow_arm">
+
+  <!-- ================= BASE ================= -->
+  <!-- height = 2.5 cm -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.0125"/>
+      <geometry>
+        <cylinder length="0.025" radius="0.05"/>
+      </geometry>
+      <material name="base">
+        <color rgba="0.4 0.4 0.4 0.5"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- ================= BASE YAW ================= -->
+  <joint name="joint_base_yaw" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="0 0 0.025"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.1416" upper="3.1416" effort="2" velocity="2"/>
+  </joint>
+
+  <!-- ================= LINK1 ================= -->
+  <!-- vertical spacer, height = 5 cm -->
+  <link name="link1">
+    <visual>
+      <origin xyz="0 0 0.025"/>
+      <geometry>
+        <cylinder length="0.05" radius="0.02"/>
+      </geometry>
+      <material name="link1">
+        <color rgba="0.1 0.1 0.1 0.5"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- ================= SHOULDER DEVIATION ================= -->
+  <!-- tilts shoulder away from vertical -->
+  <joint name="joint_shoulder_pitch" type="revolute">
+    <parent link="link1"/>
+    <child link="shoulder_link"/>
+    <origin xyz="0 0 0.05"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="2" velocity="2"/>
+  </joint>
+
+  <!-- ================= SHOULDER LINK ================= -->
+  <!-- length = 11.5 cm, vertical at zero -->
+  <link name="shoulder_link">
+    <visual>
+      <origin xyz="0 0 0.0575"/>
+      <geometry>
+        <cylinder length="0.115" radius="0.015"/>
+      </geometry>
+      <material name="shoulder">
+        <color rgba="0.2 0.2 0.8 0.5"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- ================= ELBOW PITCH ================= -->
+  <joint name="joint_elbow_pitch" type="revolute">
+    <parent link="shoulder_link"/>
+    <child link="L_bracket_link"/>
+    <origin xyz="0 0 0.115"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="2" velocity="2"/>
+  </joint>
+
+  <!-- ================= L-SHAPED OFFSET LINK ================= -->
+  <!-- 2 cm vertical + 1 cm horizontal -->
+  <link name="L_bracket_link">
+
+    <!-- vertical subsegment -->
+    <visual>
+      <origin xyz="0 0 0.01"/>
+      <geometry>
+        <box size="0.02 0.02 0.02"/>
+      </geometry>
+      <material name="L">
+        <color rgba="0.8 0.3 0.3 0.5"/>
+      </material>
+    </visual>
+
+    <!-- horizontal subsegment -->
+    <visual>
+      <origin xyz="0.005 0 0.02" rpy="0 1.5708 0"/>
+      <geometry>
+        <box size="0.01 0.02 0.02"/>
+      </geometry>
+      <material name="L"/>
+    </visual>
+
+  </link>
+
+
+  <!-- ================= ELBOW ROLL ================= -->
+  <joint name="elbow_roll" type="revolute">
+    <parent link="L_bracket_link"/>
+    <child link="elbow_link"/>
+    <origin xyz="0.01 0 0.02" rpy="0 1.5708 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.57" upper="1.57" effort="1" velocity="2"/>
+  </joint>
+
+
+
+  <!-- ================= ELBOW LINK ================= -->
+  <!-- 14 cm horizontal -->
+  <link name="elbow_link">
+    <visual>
+      <origin xyz="0 0 0.07"/>
+      <geometry>
+        <cylinder length="0.140" radius="0.014"/>
+      </geometry>
+      <material name="elbow">
+        <color rgba="0.2 0.8 0.2 0.5"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- ================= WRIST PITCH ================= -->
+  <joint name="joint_wrist_pitch" type="revolute">
+    <parent link="elbow_link"/>
+    <child link="wrist_link"/>
+    <origin xyz="0 0 0.140"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="1" velocity="2"/>
+  </joint>
+
+  <!-- ================= WRIST LINK ================= -->
+  <!-- 12.5 cm -->
+  <link name="wrist_link">
+    <visual>
+      <origin xyz="0 0 0.0625"/>
+      <geometry>
+        <cylinder length="0.125" radius="0.012"/>
+      </geometry>
+      <material name="wrist">
+        <color rgba="0.8 0.8 0.2 0.5"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- ================= FIXED GRIPPER JOINT ================= -->
+  <joint name="jointwrist__gripper" type="fixed">
+    <parent link="wrist_link"/>
+    <child link="gripper_link"/>
+    <origin xyz="0 0 0.125"/>
+    <axis xyz="1 0 0"/>
+  </joint>
+
+  <!-- ================= GRIPPER ================= -->
+  <link name="gripper_link">
+    <visual>
+
+      <geometry>
+       <box size="0.06 0.01 0.01"/>
+      </geometry>
+      <material name="gripper">
+        <color rgba="0.9 0.9 0.9 0.5"/>
+      </material>
+    </visual>
+  </link>
+
+</robot>
