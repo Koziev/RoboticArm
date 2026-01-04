@@ -80,3 +80,19 @@ input("Press any key...")
 
 ![Grasping and and carrying an object](KinematicBaseline/20251220_090612.gif)
 
+
+### Пайплайн управления манипулятором на базе Qwen-VL zero-shot prompting
+
+Все компоненты пайплайна собраны в подкаталоге VL_ZeroShot_Pipeline:
+
+1) Обновленный файл URDF с описанием кинематики: [arm8.urdf](VL_ZeroShot_Pipeline/arm8.urdf)
+
+2) На RaspberryPi выполняется веб-сервис, который позволяет через простой rest api давать команды на сервоприводы: [rpi_arm_service.py](VL_ZeroShot_Pipeline/rpi_arm_service.py)
+
+3) На первом этапе происходит калибровка манипулятора через исполнение случайных траекторий и фиксацию изображения манипулятора в конечный момент траектории (когда сервоприводы пришли в целевое состояние или произошло касание захватом поверхности стола). Для калибровки выполняется параллельно 2 кода: запись кадров с камеры [camera_gripper_recorder.py](VL_ZeroShot_Pipeline/camera_gripper_recorder.py) и прогон траекторий [explorer_client_no_camera.v4.py](VL_ZeroShot_Pipeline/explorer_client_no_camera.v4.py). Примерно через 1 час, когда будет отработано около 500 траекторий, с помощью кода [samples_assembler.py](VL_ZeroShot_Pipeline/samples_assembler.py) выполняется сведение записанных изображений и состояний манипулятора.
+
+4) После калибровки выполняется код [object-catcher.v2.py](VL_ZeroShot_Pipeline/object-catcher.v2.py), который а) анализирует изображение с камеры, выделяет с помощью [Qwen/Qwen2.5-VL-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct) объекты на белом поле перед манипулятором, б) определяет bounding box для одного из найденных объектов с помощью [iSEE-Laboratory/llmdet_large](https://huggingface.co/iSEE-Laboratory/llmdet_large), в) планирует и запускает траекторию для захвата объекта.
+
+Видео с примером удачного захвата:
+
+![Successful grasping with VL model powered pipeline](VL_ZeroShot_Pipeline/green_ball_grasping_success.gif)
